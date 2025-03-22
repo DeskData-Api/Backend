@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Chamados {
+  id                    Int       @id @default(autoincrement())
+  titulo                String
+  entidade              String?
+  categoria             String?
+  localizacao           String?
+  elementos_associados  String?
+  data_abertura         DateTime?
+  data_fechamento       DateTime?
+  tempo_interno_excedido Boolean?
+  tempo_resposta        DateTime?
+  tempo_interno_resposta DateTime?
+  descricao             String?
+  plugins               String?
+  solucao               String?
+  status                String?
+  tipo                  String?
+  tecnico_atribuido     String?
+  fornecedor_atribuido  String?
+  ultima_atualizacao    DateTime?
+  simplificado          ChamadosSimplificados? @relation(fields: [id], references: [id_da_item])
+
+  @@index([status])
+  @@index([data_abertura])
+}
+
+model ChamadosSimplificados {
+  id_da_item     Int      @id
+  resumo         String
+  tipo_do_ticket String?
+  status         String?
+  nome_do_projeto String?
+  responsavel    String?
+  criado         DateTime?
+  atualizado     DateTime?
+  resolvido      DateTime?
+  descricao      String?
+  anexos         String?
+  chamado        Chamados? @relation
+
+  @@index([status])
+  @@index([criado])
+}
