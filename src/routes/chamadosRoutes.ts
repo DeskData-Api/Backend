@@ -1,10 +1,10 @@
-import { Router } from 'express';
-import { ChamadosController } from '../controllers/chamadosController';
+import { Router, Request, Response } from "express";
+import { ChamadosController } from '../controllers';
 
-const router = Router();
-const controller = new ChamadosController();
+const routes = Router();
 
-router.get('/chamados/abertos', controller.getOpenChamados);
-router.get('/chamados/:id', controller.getChamadoById);
+routes.get('/dashboard', ChamadosController.dashboard);
+routes.get('/abertos', ChamadosController.listar);
+routes.get('/:id', ChamadosController.listarId);
 
-export default router;
+export default routes;

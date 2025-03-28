@@ -7,14 +7,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Chamados {
+model chamados {
   id                    Int       @id @default(autoincrement())
   titulo                String
   entidade              String?
   categoria             String?
   localizacao           String?
-  elementos_associados  String?
-  data_abertura         DateTime?
+  elementos_associados  String
+  data_abertura         DateTime
   data_fechamento       DateTime?
   tempo_interno_excedido Boolean?
   tempo_resposta        DateTime?
@@ -27,16 +27,15 @@ model Chamados {
   tecnico_atribuido     String?
   fornecedor_atribuido  String?
   ultima_atualizacao    DateTime?
-  simplificado          ChamadosSimplificados? @relation(fields: [id], references: [id_da_item])
 
   @@index([status])
   @@index([data_abertura])
 }
 
-model ChamadosSimplificados {
+model chamados_simplificados {
   id_da_item     Int      @id
   resumo         String
-  tipo_do_ticket String?
+  tipo           String?
   status         String?
   nome_do_projeto String?
   responsavel    String?
@@ -45,7 +44,6 @@ model ChamadosSimplificados {
   resolvido      DateTime?
   descricao      String?
   anexos         String?
-  chamado        Chamados? @relation
 
   @@index([status])
   @@index([criado])

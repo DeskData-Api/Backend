@@ -1,0 +1,1 @@
+export { default as ChamadosController } from './chamadosController';
