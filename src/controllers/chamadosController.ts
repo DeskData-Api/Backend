@@ -49,9 +49,10 @@ export class ChamadosController {
       if (chamadosComResolucao.length > 0) {
         const tempos = chamadosComResolucao
           .filter(hasValidDates) // Aplica o type guard
+          .filter(chamado => chamado.data_fechamento) // Filtra casos onde fechamento é null
           .map(chamado => {
             const abertura = new Date(chamado.data_abertura); // Seguro após o type guard
-            const fechamento = new Date(chamado.data_fechamento); // Seguro após o type guard
+            const fechamento = new Date(chamado.data_fechamento!); // Seguro após o type guard
             return (fechamento.getTime() - abertura.getTime()) / (1000 * 60 * 60);
           });
 
@@ -72,7 +73,7 @@ export class ChamadosController {
         .map(([name, qtd]) => ({ name, qtd }))
         .sort((a, b) => b.qtd - a.qtd)
         .slice(0, 3);
-      
+
       // Conta a frequência de cada elemento
       const contagem: { [key: string]: number } = {};
       chamados.forEach((item) => {
@@ -87,7 +88,7 @@ export class ChamadosController {
         .map(([categoria, qtd]) => ({ categoria, qtd }))
         .sort((a, b) => b.qtd - a.qtd)
         .slice(0, 3);
-        // Resposta consolidada
+      // Resposta consolidada
 
       const contagemColaborador: { [key: string]: number } = {};
       chamados.forEach((item) => {
@@ -103,7 +104,7 @@ export class ChamadosController {
         .slice(0, 5);
 
       const chamadosPorMes = await chamadosService.getChamadosPorMes();
-      
+
       res.json({
         total,
         abertos,
@@ -135,7 +136,7 @@ export class ChamadosController {
     }
   }
 
-  
+
 }
 
 export default new ChamadosController();

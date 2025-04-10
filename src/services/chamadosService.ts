@@ -47,7 +47,7 @@ export class ChamadosService {
         id: true, // Conta o número de chamados
       },
       where: {
-        data_abertura: { not: null }, // Exclui chamados sem data de abertura
+        data_abertura: { not: undefined }, // Exclui chamados sem data de abertura
       },
       orderBy: {
         data_abertura: 'asc', // Ordena por data crescente
