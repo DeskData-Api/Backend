@@ -37,12 +37,9 @@ export class ChamadosController {
       // Chamados Fechados
       const fechados = chamados.filter(chamado => chamado.status === 'fechado').length;
 
-      // Chamados Resolvidos
-      const resolvidos = chamados.filter(chamado => chamado.status === 'RESOLVIDO').length;
-
       // Tempo Médio de Resposta
       const chamadosComResolucao = chamados.filter(chamado =>
-        chamado.status === 'RESOLVIDO' || chamado.status === 'fechado'
+        chamado.status === 'fechado'
       );
 
       let tempoMedio = 0;
@@ -72,7 +69,7 @@ export class ChamadosController {
       const top5Categorias = Object.entries(categoriasCount)
         .map(([name, qtd]) => ({ name, qtd }))
         .sort((a, b) => b.qtd - a.qtd)
-        .slice(0, 3);
+        .slice(0, 5);
 
       // Conta a frequência de cada elemento
       const contagem: { [key: string]: number } = {};
@@ -87,7 +84,7 @@ export class ChamadosController {
       const top5Elementos = Object.entries(contagem)
         .map(([categoria, qtd]) => ({ categoria, qtd }))
         .sort((a, b) => b.qtd - a.qtd)
-        .slice(0, 3);
+        .slice(0, 5);
       // Resposta consolidada
 
       const contagemColaborador: { [key: string]: number } = {};
@@ -98,23 +95,21 @@ export class ChamadosController {
         }
       });
 
-      const colaboradores = Object.entries(contagemColaborador)
-        .map(([name, qtd]) => ({ name, qtd }))
-        .sort((a, b) => b.qtd - a.qtd)
-        .slice(0, 5);
-
       const chamadosPorMes = await chamadosService.getChamadosPorMes();
 
+      const chm = await chamadosService.pln();
+
+      const similaridadeChamados = await chamadosService.getSimilaridadeChamados();
       res.json({
         total,
         abertos,
         fechados,
-        resolvidos,
         tempoMedio: Number(tempoMedio.toFixed(2)), // Descomentei, mas pode manter comentado se preferir
         top5Categorias,
         top5Elementos,
         chamadosPorMes,
-        colaboradores
+        chm,
+        similaridadeChamados
       });
     } catch (error) {
       res.status(500).json({ error: 'Erro ao buscar dados do dashboard' });

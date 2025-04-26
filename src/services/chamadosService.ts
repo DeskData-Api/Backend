@@ -23,6 +23,19 @@ export class ChamadosService {
     );
   }
 
+  async pln() {
+    return await prisma.analisePlnChamados.findMany(
+      {
+        select: {
+          id: true,
+          frequentes_problema:true,
+          frequencia_categorias:true,
+          distribuicao_temporal:true,
+        }
+      }
+    );
+  }
+
   async listarId(id: number) {
     return await prisma.chamados.findUnique({
       where: { id },

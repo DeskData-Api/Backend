@@ -58,3 +58,15 @@ model similaridade_chamados {
   score      Float     @db.Real
   created_at DateTime? @default(now()) @db.Timestamp(6)
 }
+
+model AnalisePlnChamados {
+  id                    Int      @id @default(autoincrement())
+  frequentes_problema    Json // termos mais comuns em descrição
+  agrupamento_categorias Json     // agrupamentos semânticos entre categorias
+  frequencia_categorias  Json     // contagem de categorias
+  distribuicao_temporal  Json     // volume de chamados por semana
+  data_analise           DateTime @default(now()) // data da análise
+  insights_temporais     String[] // insights gerados sobre tendências temporais
+
+  @@map("analise_pln_chamados")
+}
