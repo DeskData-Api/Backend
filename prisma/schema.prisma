@@ -3,50 +3,58 @@ generator client {
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model chamados {
-  id                    Int       @id @default(autoincrement())
-  titulo                String
-  entidade              String?
-  categoria             String?
-  localizacao           String?
-  elementos_associados  String
-  data_abertura         DateTime
-  data_fechamento       DateTime?
+  id                     Int       @id
+  titulo                 String    @db.VarChar(255)
+  entidade               String?   @db.VarChar(255)
+  categoria              String?   @db.VarChar(255)
+  localizacao            String?   @db.VarChar(255)
+  elementos_associados   String?   @db.VarChar(255)
+  data_abertura          DateTime? @db.Timestamp(6)
+  data_fechamento        DateTime? @db.Timestamp(6)
   tempo_interno_excedido Boolean?
-  tempo_resposta        DateTime?
-  tempo_interno_resposta DateTime?
-  descricao             String?
-  plugins               String?
-  solucao               String?
-  status                String?
-  tipo                  String?
-  tecnico_atribuido     String?
-  fornecedor_atribuido  String?
-  ultima_atualizacao    DateTime?
+  tempo_resposta         DateTime? @db.Timestamp(6)
+  tempo_interno_resposta DateTime? @db.Timestamp(6)
+  descricao              String?
+  plugins                String?   @db.VarChar(255)
+  solucao                String?
+  status                 String?   @db.VarChar(100)
+  tipo                   String?   @db.VarChar(100)
+  tecnico_atribuido      String?   @db.VarChar(255)
+  fornecedor_atribuido   String?   @db.VarChar(255)
+  ultima_atualizacao     DateTime? @db.Timestamp(6)
 
-  @@index([status])
-  @@index([data_abertura])
+  @@index([data_abertura], map: "idx_chamados_data_abertura")
+  @@index([status], map: "idx_chamados_status")
 }
 
 model chamados_simplificados {
-  id_da_item     Int      @id
-  resumo         String
-  tipo           String?
-  status         String?
-  nome_do_projeto String?
-  responsavel    String?
-  criado         DateTime?
-  atualizado     DateTime?
-  resolvido      DateTime?
-  descricao      String?
-  anexos         String?
+  id_da_item      Int       @id
+  resumo          String    @db.VarChar(255)
+  tipo            String?   @db.VarChar(100)
+  status          String?   @db.VarChar(100)
+  nome_do_projeto String?   @db.VarChar(255)
+  responsavel     String?   @db.VarChar(255)
+  criado          DateTime? @db.Timestamp(6)
+  atualizado      DateTime? @db.Timestamp(6)
+  resolvido       DateTime? @db.Timestamp(6)
+  descricao       String?
+  anexos          String?
 
-  @@index([status])
-  @@index([criado])
+  @@index([criado], map: "idx_chamados_simplificados_criado")
+  @@index([status], map: "idx_chamados_simplificados_status")
+}
+
+model similaridade_chamados {
+  id         Int       @id @default(autoincrement())
+  chamado_1  Int
+  chamado_2  Int
+  label      String
+  score      Float     @db.Real
+  created_at DateTime? @default(now()) @db.Timestamp(6)
 }

@@ -136,7 +136,16 @@ export class ChamadosController {
     }
   }
 
-
+  async similaridadeChamados(req: Request, res: Response) {
+    try {
+      const resultados = await chamadosService.getSimilaridadeChamados();
+      res.status(200).json(resultados);
+    } catch (error) {
+      console.error("❌ Erro ao buscar similaridades:", error);
+      res.status(500).json({ error: 'Erro ao buscar dados de similaridade' });
+    }
+  }
+  
 }
 
 export default new ChamadosController();
