@@ -32,26 +32,27 @@ export class ChamadosController {
       const total = chamados.length;
 
       // Chamados Abertos
-      const abertos = chamados.filter(chamado => chamado.status === 'Processando').length;
+      const abertos = chamados.filter(chamado => chamado.status === 'processando').length;
 
       // Chamados Fechados
-      const fechados = chamados.filter(chamado => chamado.status === 'Fechado').length;
+      const fechados = chamados.filter(chamado => chamado.status === 'fechado').length;
 
       // Chamados Resolvidos
       const resolvidos = chamados.filter(chamado => chamado.status === 'RESOLVIDO').length;
 
       // Tempo Médio de Resposta
       const chamadosComResolucao = chamados.filter(chamado =>
-        chamado.status === 'RESOLVIDO' || chamado.status === 'Fechado'
+        chamado.status === 'RESOLVIDO' || chamado.status === 'fechado'
       );
 
       let tempoMedio = 0;
       if (chamadosComResolucao.length > 0) {
         const tempos = chamadosComResolucao
           .filter(hasValidDates) // Aplica o type guard
+          .filter(chamado => chamado.data_fechamento) // Filtra casos onde fechamento é null
           .map(chamado => {
             const abertura = new Date(chamado.data_abertura); // Seguro após o type guard
-            const fechamento = new Date(chamado.data_fechamento); // Seguro após o type guard
+            const fechamento = new Date(chamado.data_fechamento!); // Seguro após o type guard
             return (fechamento.getTime() - abertura.getTime()) / (1000 * 60 * 60);
           });
 
@@ -62,7 +63,7 @@ export class ChamadosController {
 
       // Agrupar por categoria e contar (Top 5)
       const categoriasCount = chamados.reduce((acc, chamado) => {
-        const parts = (chamado.categoria || 'Sem Categoria').split(' > ');
+        const parts = (chamado.categoria || 'sem categoria').split(' > ');
         const simplifiedCategory = parts.length > 2 ? parts[2] : parts[1] || parts[0];
         acc[simplifiedCategory] = (acc[simplifiedCategory] || 0) + 1;
         return acc;
@@ -72,7 +73,7 @@ export class ChamadosController {
         .map(([name, qtd]) => ({ name, qtd }))
         .sort((a, b) => b.qtd - a.qtd)
         .slice(0, 3);
-      
+
       // Conta a frequência de cada elemento
       const contagem: { [key: string]: number } = {};
       chamados.forEach((item) => {
@@ -87,7 +88,7 @@ export class ChamadosController {
         .map(([categoria, qtd]) => ({ categoria, qtd }))
         .sort((a, b) => b.qtd - a.qtd)
         .slice(0, 3);
-        // Resposta consolidada
+      // Resposta consolidada
 
       const contagemColaborador: { [key: string]: number } = {};
       chamados.forEach((item) => {
@@ -103,7 +104,7 @@ export class ChamadosController {
         .slice(0, 5);
 
       const chamadosPorMes = await chamadosService.getChamadosPorMes();
-      
+
       res.json({
         total,
         abertos,
@@ -135,6 +136,15 @@ export class ChamadosController {
     }
   }
 
+  async similaridadeChamados(req: Request, res: Response) {
+    try {
+      const resultados = await chamadosService.getSimilaridadeChamados();
+      res.status(200).json(resultados);
+    } catch (error) {
+      console.error("❌ Erro ao buscar similaridades:", error);
+      res.status(500).json({ error: 'Erro ao buscar dados de similaridade' });
+    }
+  }
   
 }
 

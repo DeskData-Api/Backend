@@ -17,12 +17,12 @@ export class ChamadosService {
           status: true,
           descricao: true,
           elementos_associados: true,
-          tecnico_atribuido:true,
+          tecnico_atribuido: true,
         }
       }
     );
   }
-  
+
   async listarId(id: number) {
     return await prisma.chamados.findUnique({
       where: { id },
@@ -47,7 +47,7 @@ export class ChamadosService {
         id: true, // Conta o número de chamados
       },
       where: {
-        data_abertura: { not: null }, // Exclui chamados sem data de abertura
+        data_abertura: { not: undefined }, // Exclui chamados sem data de abertura
       },
       orderBy: {
         data_abertura: 'asc', // Ordena por data crescente
@@ -72,4 +72,44 @@ export class ChamadosService {
 
     return resultado;
   }
+
+  async getSimilaridadeChamados() {
+    const resultados = await prisma.similaridade_chamados.findMany({
+      where: {
+        score: {
+          gte: 50,
+          lte: 85,
+        },
+      },
+      orderBy: {
+        score: 'desc',
+      },
+      take: 200, // pega um conjunto maior para filtrar depois
+    });
+  
+    const vistos = new Set<string>();
+    const unicos = [];
+  
+    for (const item of resultados) {
+      const [parte1, parte2] = item.label
+        .toLowerCase()
+        .split('≈')
+        .map(str => str.trim().replace(/\s+/g, ''));
+  
+      const chave = parte1 < parte2 ? `${parte1}|${parte2}` : `${parte2}|${parte1}`;
+  
+      if (!vistos.has(chave) && parte1 !== parte2) {
+        vistos.add(chave);
+        unicos.push({
+          name: item.label,
+          qtd: Number(item.score.toFixed(2)),
+        });
+      }
+  
+      if (unicos.length >= 5) break; // ou aumente se quiser mais
+    }
+  
+    return unicos;
+  }
+
 }
