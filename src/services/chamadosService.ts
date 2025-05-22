@@ -125,4 +125,23 @@ export class ChamadosService {
     return unicos;
   }
 
+  async listarTopicos() {
+    const ultimo = await prisma.topicos_lda.findFirst({
+      orderBy: { id: 'desc' }
+    });
+
+    if (!ultimo) return [];
+
+    // Estrutura que foi salva: { "Topico_1": [ ["palavra",peso], ... ], ... }
+    const bruto = ultimo.topicos as Record<string, [string, number][]>;
+
+    const normalizado = Object.entries(bruto).map(([chave, pares]) => ({
+      topico: chave.toLowerCase(),                // "topico_1"
+      palavras: pares.map(p => p[0]),
+      pesos:    pares.map(p => p[1])
+    }));
+
+    return normalizado;
+  }
+
 }
