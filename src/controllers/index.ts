@@ -1,1 +1,1 @@
-export { default as ChamadosController } from './chamadosController';
+export { default as UsuarioController } from './UsuarioController';

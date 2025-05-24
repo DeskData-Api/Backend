@@ -1,6 +1,5 @@
-import { Router, Request, Response } from "express";
-import { ChamadosController } from '../controllers';
-
+import { Router } from "express";
+import { ChamadosController } from '../controllers/chamadosController';
 const routes = Router();
 
 routes.get('/dashboard', ChamadosController.dashboard);

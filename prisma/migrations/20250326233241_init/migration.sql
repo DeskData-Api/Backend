@@ -1,3 +1,12 @@
+-- Tabela: Usuario
+CREATE TABLE "Usuario" (
+  "id" SERIAL PRIMARY KEY,
+  "nome" TEXT NOT NULL,
+  "email" TEXT NOT NULL UNIQUE,
+  "senha" TEXT NOT NULL,
+  "data_criacao" TIMESTAMP(6) DEFAULT NOW()
+);
+
 -- CreateTable
 CREATE TABLE "chamados" (
     "id" SERIAL NOT NULL,

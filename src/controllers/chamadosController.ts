@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ChamadosService } from '../services/chamadosService';
+import { ChamadosService } from '../services/ChamadosService';
 
 const chamadosService = new ChamadosService();
 
@@ -24,7 +24,7 @@ function hasValidDates(chamado: Chamado): chamado is Chamado & { data_abertura: 
 }
 
 export class ChamadosController {
-  async dashboard(req: Request, res: Response) {
+  static async dashboard(req: Request, res: Response) {
     try {
       const chamados = await chamadosService.listar();
 
@@ -32,13 +32,13 @@ export class ChamadosController {
       const total = chamados.length;
 
       // Chamados Abertos
-      const abertos = chamados.filter(chamado => chamado.status === 'processando').length;
+      const abertos = chamados.filter((chamado: Chamado) => chamado.status === 'processando').length;
 
       // Chamados Fechados
-      const fechados = chamados.filter(chamado => chamado.status === 'fechado').length;
+      const fechados = chamados.filter((chamado: Chamado)  => chamado.status === 'fechado').length;
 
       // Tempo Médio de Resposta
-      const chamadosComResolucao = chamados.filter(chamado =>
+      const chamadosComResolucao = chamados.filter((chamado: Chamado)  =>
         chamado.status === 'fechado'
       );
 
@@ -46,34 +46,34 @@ export class ChamadosController {
       if (chamadosComResolucao.length > 0) {
         const tempos = chamadosComResolucao
           .filter(hasValidDates) // Aplica o type guard
-          .filter(chamado => chamado.data_fechamento) // Filtra casos onde fechamento é null
-          .map(chamado => {
-            const abertura = new Date(chamado.data_abertura); // Seguro após o type guard
+          .filter((chamado: Chamado) => chamado.data_fechamento) // Filtra casos onde fechamento é null
+          .map((chamado: Chamado) => {
+            const abertura = new Date(chamado.data_abertura!); // Seguro após o type guard
             const fechamento = new Date(chamado.data_fechamento!); // Seguro após o type guard
             return (fechamento.getTime() - abertura.getTime()) / (1000 * 60 * 60);
           });
 
         if (tempos.length > 0) {
-          tempoMedio = tempos.reduce((acc, curr) => acc + curr, 0) / tempos.length;
+            tempoMedio = tempos.reduce((acc: number, curr: number) => acc + curr, 0) / tempos.length;
         }
       }
 
       // Agrupar por categoria e contar (Top 5)
-      const categoriasCount = chamados.reduce((acc, chamado) => {
-        const parts = (chamado.categoria || 'sem categoria').split(' > ');
+      const categoriasCount = chamados.reduce((acc: Record<string, number>, curr: Chamado) => {
+        const parts = (curr.categoria! || 'sem categoria').split(' > ');
         const simplifiedCategory = parts.length > 2 ? parts[2] : parts[1] || parts[0];
         acc[simplifiedCategory] = (acc[simplifiedCategory] || 0) + 1;
         return acc;
       }, {} as Record<string, number>);
 
       const top5Categorias = Object.entries(categoriasCount)
-        .map(([name, qtd]) => ({ name, qtd }))
+        .map(([name, qtd]) => ({ name, qtd: Number(qtd) }))
         .sort((a, b) => b.qtd - a.qtd)
         .slice(0, 5);
 
       // Conta a frequência de cada elemento
       const contagem: { [key: string]: number } = {};
-      chamados.forEach((item) => {
+      chamados.forEach((item: Chamado) => {
         const elemento = item.elementos_associados;
         if (elemento) {
           contagem[elemento] = (contagem[elemento] || 0) + 1;
@@ -88,7 +88,7 @@ export class ChamadosController {
       // Resposta consolidada
 
       const contagemColaborador: { [key: string]: number } = {};
-      chamados.forEach((item) => {
+      chamados.forEach((item: Chamado) => {
         const elemento = item.tecnico_atribuido;
         if (elemento) {
           contagemColaborador[elemento] = (contagemColaborador[elemento] || 0) + 1;
@@ -116,12 +116,12 @@ export class ChamadosController {
     }
   }
 
-  async listar(req: Request, res: Response) {
+  static async listar(req: Request, res: Response) {
     const chamados = await chamadosService.listar();
     res.status(200).json(chamados);
   }
 
-  async listarId(req: Request, res: Response) {
+  static async listarId(req: Request, res: Response) {
     const { id } = req.params;
     const chamado = await chamadosService.listarId(Number(id));
     if (chamado) {
@@ -131,7 +131,7 @@ export class ChamadosController {
     }
   }
 
-  async similaridadeChamados(req: Request, res: Response) {
+  static async similaridadeChamados(req: Request, res: Response) {
     try {
       const resultados = await chamadosService.getSimilaridadeChamados();
       res.status(200).json(resultados);

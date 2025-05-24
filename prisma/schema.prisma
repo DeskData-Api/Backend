@@ -71,6 +71,14 @@ model AnalisePlnChamados {
   @@map("analise_pln_chamados")
 }
 
+model usuario {
+  id           Int            @id @default(autoincrement())
+  nome         String
+  email        String         @unique
+  senha        String
+  data_criacao DateTime        @default(now())
+}
+
 model topicos_lda {
   id           Int      @id @default(autoincrement())
   data_analise DateTime @default(now())
