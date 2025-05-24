@@ -69,7 +69,7 @@ export class ChamadosService {
 
     // Agrupar por mês
     const contagemPorMes: { [key: string]: number } = {};
-    chamados.forEach((item) => {
+    chamados.forEach((item:any) => {
       if (item.data_abertura) {
         const data = new Date(item.data_abertura);
         const mesAno = `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`; // Formato YYYY-MM
@@ -104,10 +104,10 @@ export class ChamadosService {
     const unicos = [];
   
     for (const item of resultados) {
-      const [parte1, parte2] = item.label
+      const [parte1, parte2]: [string, string] = item.label
         .toLowerCase()
         .split('≈')
-        .map(str => str.trim().replace(/\s+/g, ''));
+        .map((str: string) => str.trim().replace(/\s+/g, '')) as [string, string];
   
       const chave = parte1 < parte2 ? `${parte1}|${parte2}` : `${parte2}|${parte1}`;
   
