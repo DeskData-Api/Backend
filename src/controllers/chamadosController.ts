@@ -140,6 +140,11 @@ export class ChamadosController {
       res.status(500).json({ error: 'Erro ao buscar dados de similaridade' });
     }
   }
+
+  async listarModelagemTopicos(_req: Request, res: Response) {
+    const dados = await chamadosService.listarTopicos();
+    res.status(200).json(dados);
+  }
   
 }
 

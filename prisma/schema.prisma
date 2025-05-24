@@ -79,7 +79,7 @@ model usuario {
   data_criacao DateTime        @default(now())
 }
 
-model topicos {
+model topicos_lda {
   id           Int      @id @default(autoincrement())
   data_analise DateTime @default(now())
   topicos      Json     // JSONB no Postgres

@@ -6,5 +6,6 @@ routes.get('/dashboard', ChamadosController.dashboard);
 routes.get('/abertos', ChamadosController.listar);
 routes.get('/similaridade', ChamadosController.similaridadeChamados);
 routes.get('/:id', ChamadosController.listarId);
+routes.get('/topicos', ChamadosController.listarModelagemTopicos)
 
 export default routes;
