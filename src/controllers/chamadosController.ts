@@ -35,10 +35,10 @@ export class ChamadosController {
       const abertos = chamados.filter((chamado: Chamado) => chamado.status === 'processando').length;
 
       // Chamados Fechados
-      const fechados = chamados.filter((chamado: Chamado)  => chamado.status === 'fechado').length;
+      const fechados = chamados.filter((chamado: Chamado) => chamado.status === 'fechado').length;
 
       // Tempo Médio de Resposta
-      const chamadosComResolucao = chamados.filter((chamado: Chamado)  =>
+      const chamadosComResolucao = chamados.filter((chamado: Chamado) =>
         chamado.status === 'fechado'
       );
 
@@ -54,7 +54,7 @@ export class ChamadosController {
           });
 
         if (tempos.length > 0) {
-            tempoMedio = tempos.reduce((acc: number, curr: number) => acc + curr, 0) / tempos.length;
+          tempoMedio = tempos.reduce((acc: number, curr: number) => acc + curr, 0) / tempos.length;
         }
       }
 
@@ -121,6 +121,18 @@ export class ChamadosController {
     res.status(200).json(chamados);
   }
 
+  static async listarPorTecnico(req: Request, res: Response) {
+    try {
+      const { nome } = req.params;
+
+      const chamados = await chamadosService.listarPorTecnico(nome);
+      res.status(200).json(chamados);
+    } catch (error) {
+      console.error("Erro ao listar por técnico:", error);
+      res.status(500).json({ error: "Erro interno ao buscar chamados por técnico" });
+    }
+  }
+
   static async listarId(req: Request, res: Response) {
     const { id } = req.params;
     const chamado = await chamadosService.listarId(Number(id));
@@ -145,7 +157,7 @@ export class ChamadosController {
     const dados = await chamadosService.listarTopicos();
     res.status(200).json(dados);
   }
-  
+
 }
 
 export default new ChamadosController();
