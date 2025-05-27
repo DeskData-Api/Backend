@@ -4,6 +4,7 @@ CREATE TABLE "Usuario" (
   "nome" TEXT NOT NULL,
   "email" TEXT NOT NULL UNIQUE,
   "senha" TEXT NOT NULL,
+  "cargo" TEXT NOT NULL,
   "data_criacao" TIMESTAMP(6) DEFAULT NOW()
 );
 

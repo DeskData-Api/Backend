@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 
 import { default as UsuarioRoutes } from "./UsuarioRoutes";
-import { default as ChamadosRoutes } from "./ChamadosRoutes";
+import { default as ChamadosRoutes } from "./chamadosRoutes";
 import { LoginController } from "../controllers/LoginController";
 const router = Router();
 

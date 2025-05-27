@@ -7,14 +7,14 @@ const usuarioService = new UsuarioService();
 
 export class UsuarioController {
   async criarUsuario(req: Request, res: Response) {
-    const { nome, email, senha } = req.body;
+    const { nome, email, senha, cargo } = req.body;
   
     if (!nome || !email || !senha) {
       return res.status(400).json({ error: 'Nome, email e senha são obrigatórios' });
     }
   
     try {
-      const usuario = await usuarioService.criarUsuario(nome, email, senha);
+      const usuario = await usuarioService.criarUsuario(nome, email, senha, cargo);
       res.status(201).json(usuario);
     } catch (error) {
       res.status(400).json({ error: 'Erro ao cadastar o usuário' });

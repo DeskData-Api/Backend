@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ChamadosService } from '../services/ChamadosService';
+import { ChamadosService } from '../services/chamadosService';
 
 const chamadosService = new ChamadosService();
 

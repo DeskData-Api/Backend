@@ -24,7 +24,8 @@ async function initializeDatabase() {
         data: {
           nome: "admin",
           email: "admin@gmail.com",
-          senha: sha512.crypt("123", "password")
+          senha: sha512.crypt("123", "password"),
+          cargo: "Administrador"
         }
       });
       console.log("Usuário admin criado com sucesso.");
@@ -35,7 +36,8 @@ async function initializeDatabase() {
         data: {
           nome: "user",
           email: "user@gmail.com",
-          senha: sha512.crypt("123", "password")
+          senha: sha512.crypt("123", "password"),
+          cargo: "Visualizador"
         }
       });
       console.log("Usuário user criado com sucesso.");

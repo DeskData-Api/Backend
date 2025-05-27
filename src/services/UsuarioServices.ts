@@ -4,8 +4,8 @@ import { sha512 } from 'sha512-crypt-ts';  // Importa a função 'sha512' de 'sh
 const prisma = new PrismaClient();
 
 export class UsuarioService {
-  async criarUsuario(nome: string, email: string, senha: string) {
-    if (!nome || !email || !senha) {
+  async criarUsuario(nome: string, email: string, senha: string, cargo: string) {
+    if (!nome || !email || !senha || !cargo) {
       throw new Error('Campos obrigatórios faltando');
     }
 
@@ -29,6 +29,7 @@ export class UsuarioService {
           nome,
           email,
           senha: sha512.crypt(senha, "password"),
+          cargo,
           data_criacao: now,
         },
       });
