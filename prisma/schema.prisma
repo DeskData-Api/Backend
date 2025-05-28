@@ -55,6 +55,33 @@ model similaridade_chamados {
   chamado_1  Int
   chamado_2  Int
   label      String
-  score      Float     @db.Real
+  score      Decimal     @db.Decimal
   created_at DateTime? @default(now()) @db.Timestamp(6)
+}
+
+model AnalisePlnChamados {
+  id                    Int      @id @default(autoincrement())
+  frequentes_problema    Json // termos mais comuns em descrição
+  agrupamento_categorias Json     // agrupamentos semânticos entre categorias
+  frequencia_categorias  Json     // contagem de categorias
+  distribuicao_temporal  Json     // volume de chamados por semana
+  data_analise           DateTime @default(now()) // data da análise
+  insights_temporais     String[] // insights gerados sobre tendências temporais
+
+  @@map("analise_pln_chamados")
+}
+
+model usuario {
+  id           Int            @id @default(autoincrement())
+  nome         String
+  email        String         @unique
+  senha        String
+  cargo        String
+  data_criacao DateTime        @default(now())
+}
+
+model topicos_lda {
+  id           Int      @id @default(autoincrement())
+  data_analise DateTime @default(now())
+  topicos      Json     // JSONB no Postgres
 }

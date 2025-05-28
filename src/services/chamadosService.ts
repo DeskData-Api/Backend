@@ -23,6 +23,43 @@ export class ChamadosService {
     );
   }
 
+  async listarPorTecnico(nome: string) {
+    return await prisma.chamados.findMany({
+      where: {
+        tecnico_atribuido: {
+          contains: nome,
+          mode: 'insensitive', // Ignora maiúsculas/minúsculas
+        },
+      },
+      select: {
+        id: true,
+        titulo: true,
+        entidade: true,
+        categoria: true,
+        localizacao: true,
+        data_abertura: true,
+        data_fechamento: true,
+        status: true,
+        descricao: true,
+        elementos_associados: true,
+        tecnico_atribuido: true,
+      },
+    });
+  }
+
+  async pln() {
+    return await prisma.analisePlnChamados.findMany(
+      {
+        select: {
+          id: true,
+          frequentes_problema: true,
+          frequencia_categorias: true,
+          distribuicao_temporal: true,
+        }
+      }
+    );
+  }
+
   async listarId(id: number) {
     return await prisma.chamados.findUnique({
       where: { id },
@@ -56,7 +93,7 @@ export class ChamadosService {
 
     // Agrupar por mês
     const contagemPorMes: { [key: string]: number } = {};
-    chamados.forEach((item) => {
+    chamados.forEach((item: any) => {
       if (item.data_abertura) {
         const data = new Date(item.data_abertura);
         const mesAno = `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`; // Formato YYYY-MM
@@ -86,18 +123,18 @@ export class ChamadosService {
       },
       take: 200, // pega um conjunto maior para filtrar depois
     });
-  
+
     const vistos = new Set<string>();
     const unicos = [];
-  
+
     for (const item of resultados) {
-      const [parte1, parte2] = item.label
+      const [parte1, parte2]: [string, string] = item.label
         .toLowerCase()
         .split('≈')
-        .map(str => str.trim().replace(/\s+/g, ''));
-  
+        .map((str: string) => str.trim().replace(/\s+/g, '')) as [string, string];
+
       const chave = parte1 < parte2 ? `${parte1}|${parte2}` : `${parte2}|${parte1}`;
-  
+
       if (!vistos.has(chave) && parte1 !== parte2) {
         vistos.add(chave);
         unicos.push({
@@ -105,11 +142,30 @@ export class ChamadosService {
           qtd: Number(item.score.toFixed(2)),
         });
       }
-  
+
       if (unicos.length >= 5) break; // ou aumente se quiser mais
     }
-  
+
     return unicos;
+  }
+
+  async listarTopicos() {
+    const ultimo = await prisma.topicos_lda.findFirst({
+      orderBy: { id: 'desc' }
+    });
+
+    if (!ultimo) return [];
+
+    // Estrutura que foi salva: { "Topico_1": [ ["palavra",peso], ... ], ... }
+    const bruto = ultimo.topicos as Record<string, [string, number][]>;
+
+    const normalizado = Object.entries(bruto).map(([chave, pares]) => ({
+      topico: chave.toLowerCase(),                // "topico_1"
+      palavras: pares.map(p => p[0]),
+      pesos: pares.map(p => p[1])
+    }));
+
+    return normalizado;
   }
 
 }
